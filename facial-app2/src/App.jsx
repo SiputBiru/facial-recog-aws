@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid/dist/esm/index.js';
+import {v4 as uuidv4} from 'uuid';
 
 const API_URL = 'https://lyvl3j6y84.execute-api.ap-southeast-2.amazonaws.com/dev';
 const BUCKET = 'rekog-visitor-pics';
@@ -45,18 +45,21 @@ function App() {
         body: image,
       });
 
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const response = await authenticate(visitorImageName);
+      console.log('Authentication response:', response);
       
       if (response?.Message === 'Success') {
         setAuth(true);
         setUploadResultMessage(`Hi ${response.firstName} ${response.lastName}, welcome to work!`);
       } else {
         setAuth(false);
-        setUploadResultMessage('Authentication failed');
+        setUploadResultMessage('Authentication failed ' + (response?.Message || 'Unknown error'));
       }
     } catch (err) {
       setAuth(false);
-      setUploadResultMessage('Authentication process failed. Please try again.');
+      setUploadResultMessage(`Authentication process failed: ${err.message}`);
       console.error('Authentication error:', err);
     } finally {
       setIsLoading(false);
@@ -64,12 +67,12 @@ function App() {
   };
 
   const authenticate = async (visitorImageName) => {
-    const params = new URLSearchParams({
-      objectKey: `${visitorImageName}.jpeg`
-    });
+    // Make sure the objectKey includes the file extension
+    const objectKey = `${visitorImageName}.jpeg`;
     
     try {
-      const response = await fetch(`${API_URL}/employee?${params}`, {
+      // Note: API Gateway expects the parameter exactly as 'objectKey'
+      const response = await fetch(`${API_URL}/employee?objectKey=${encodeURIComponent(objectKey)}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -77,11 +80,14 @@ function App() {
         }
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
+      const data = await response.json();
+      
+      // The response is wrapped in API Gateway format, so we need to parse the body
+      if (data.body) {
+        return JSON.parse(data.body);
       }
       
-      return await response.json();
+      return data;
     } catch (error) {
       console.error('API error:', error);
       throw error;
