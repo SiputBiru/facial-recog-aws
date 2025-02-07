@@ -64,17 +64,20 @@ function App() {
   };
 
   const authenticate = async (visitorImageName) => {
-    const params = new URLSearchParams({
-      objectKey: `${visitorImageName}.jpeg`
-    });
+    // const params = new URLSearchParams({
+
+    //   objectKey: `${visitorImageName}.jpeg`
+    // });
     
     try {
-      const response = await fetch(`${API_URL}/employee?${params}`, {
-        method: 'GET',
+      const response = await fetch(`${API_URL}/employee`, {
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          objectKey: `${visitorImageName}.jpeg`,
+        }),
       });
       
       if (!response.ok) {
