@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid/dist/esm/index.js';
 
-const API_URL = 'https://lyvl3j6y84.execute-api.ap-southeast-2.amazonaws.com/dev';
+const API_URL = 'yourAPIURL';
 const BUCKET = 'rekog-visitor-pics';
 
 function App() {
