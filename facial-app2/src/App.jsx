@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4} from 'uuid';
 
-const API_URL = import.meta.env.API_URL;
-const BUCKET = import.meta.env.S3_BUCKET;
+const API_URL = import.meta.env.VITE_API_URL;
+const BUCKET = import.meta.env.VITE_BUCKET;
+
+// For testing the type of API_URL
+// console.log(typeof API_URL);
 
 function App() {
   const [image, setImage] = useState(null);
