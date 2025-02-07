@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import {v4 as uuidv4} from 'uuid';
 
-const API_URL = 'https://lyvl3j6y84.execute-api.ap-southeast-2.amazonaws.com/dev';
-const BUCKET = 'rekog-visitor-pics';
+const API_URL = import.meta.env.API_URL;
+const BUCKET = import.meta.env.S3_BUCKET;
 
 function App() {
   const [image, setImage] = useState(null);
@@ -67,15 +67,12 @@ function App() {
   };
 
   const authenticate = async (visitorImageName) => {
-    // Make sure the objectKey includes the file extension
-    // const objectKey = `${visitorImageName}.jpeg`;
     
     try {
       // Note: API Gateway expects the parameter exactly as 'objectKey'
       const response = await fetch(`${API_URL}/employee`, {
         method: 'POST',
         headers: {
-          // 'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
