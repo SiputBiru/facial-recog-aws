@@ -2,30 +2,29 @@ import boto3
 import json
 from botocore.exceptions import ClientError
 
-s3 = boto3.client('s3')
-rekognition = boto3.client('rekognition', region_name='ap-southeast-2')
-dynamodbTableName = 'YOUR_DYNODB_TABLE_NAME'
+s3_client = boto3.client('s3')
+rekognition_client = boto3.client('rekognition', region_name='ap-southeast-2')
 dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-2')
-employeeTable = dynamodb.Table(dynamodbTableName)
-bucketName = 'YOUR_S3_BUCKET_NAME'
+table = dynamodb.Table('DYNMODBTABLE')
+bucketName = 'VISITOR_BUCKET'
 
 def lambda_handler(event, context):
     print(event)
     try:
-        objectKey = event['queryStringParameters']['objectKey']
-    except (KeyError, TypeError) as e:
+        body = json.loads(event['body'])
+        objectKey = body['objectKey']
+    except (KeyError, TypeError, json.JSONDecodeError) as e:
         return buildResponse(400, {'Message': 'Missing or invalid objectKey parameter'})
 
     try:
-        image_bytes = s3.get_object(Bucket=bucketName, Key=objectKey)['Body'].read()
-    except ClientError as e:
-        print(f'Error retrieving image: {e}')
-        return buildResponse(404, {'Message': 'Image not found'})
-
-    try:
-        response = rekognition.search_faces_by_image(
+        response = rekognition_client.search_faces_by_image(
             CollectionId='employees',
-            Image={'Bytes': image_bytes}
+            Image={
+                'S3Object': {
+                    'Bucket': bucketName,
+                    'Name': objectKey
+                }
+            }
         )
     except ClientError as e:
         print(f'Rekognition error: {e}')
@@ -35,7 +34,7 @@ def lambda_handler(event, context):
         confidence = match['Similarity']
             
         try:
-            face = employeeTable.get_item(
+            face = table.get_item(
                 Key={
                     'rekognitionid': match['Face']['FaceId']
                 }
