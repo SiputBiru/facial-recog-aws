@@ -4,10 +4,10 @@ from botocore.exceptions import ClientError
 
 s3 = boto3.client('s3')
 rekognition = boto3.client('rekognition', region_name='ap-southeast-2')
-dynamodbTableName = 'rekog-employee'
+dynamodbTableName = 'YOUR_DYNODB_TABLE_NAME'
 dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-2')
 employeeTable = dynamodb.Table(dynamodbTableName)
-bucketName = 'rekog-visitor-pics'
+bucketName = 'YOUR_S3_BUCKET_NAME'
 
 def lambda_handler(event, context):
     print(event)

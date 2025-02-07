@@ -2,9 +2,9 @@ import boto3
 from botocore.exceptions import ClientError
 
 s3 = boto3.client('s3')
-rekognition = boto3.client('rekognition', region_name='ap-southeast-2')
-dynamodbTableName = 'rekog-employee' # Your DynamoDB table name here
-dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-2')
+rekognition = boto3.client('rekognition', region_name='REGION')
+dynamodbTableName = 'YOUR_DYNODB_TABLE_NAME' # Your DynamoDB table name here
+dynamodb = boto3.resource('dynamodb', region_name='REGION')
 employeeTable = dynamodb.Table(dynamodbTableName)
 
 def lambda_handler(event, context):
