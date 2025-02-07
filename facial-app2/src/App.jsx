@@ -68,16 +68,19 @@ function App() {
 
   const authenticate = async (visitorImageName) => {
     // Make sure the objectKey includes the file extension
-    const objectKey = `${visitorImageName}.jpeg`;
+    // const objectKey = `${visitorImageName}.jpeg`;
     
     try {
       // Note: API Gateway expects the parameter exactly as 'objectKey'
-      const response = await fetch(`${API_URL}/employee?objectKey=${encodeURIComponent(objectKey)}`, {
-        method: 'GET',
+      const response = await fetch(`${API_URL}/employee`, {
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          // 'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          objectKey: `${visitorImageName}.jpeg`,
+        }),
       });
       
       const data = await response.json();
@@ -114,7 +117,7 @@ function App() {
         </button>
       </form>
       
-      <div className={`mt-4 p-2 rounded ${isAuth ? 'bg-green-100' : 'bg-red-100'}`}>
+      <div className={`mt-4 p-2 rounded text-black ${isAuth ? 'bg-green-100' : 'bg-red-100'}`}>
         {uploadResultMessage}
       </div>
       
